@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audio Article Generator</title>
+  <style>
+    /* Dark Mode Theme */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      width: 90%;
+      padding: 2rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background-color: #1e1e1e;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    p {
+      margin-bottom: 1.5rem;
+    }
+    input[type="url"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #2e2e2e;
+      color: #e0e0e0;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background-color: #6200ee;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #7e3ff2;
+    }
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: #2e2e2e;
+      border: 1px solid #444;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Audio Article Generator</h1>
+    <p>Enter the URL of the article you want to generate audio for:</p>
+    <form id="urlForm">
+      <input type="url" id="articleUrl" placeholder="https://example.com/article" required />
+      <button type="submit">Generate Audio Script</button>
+    </form>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.getElementById('urlForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = document.getElementById('articleUrl').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.textContent = 'Processing...';
+
+      try {
+        // Replace with your actual n8n workflow endpoint URL.
+        const endpoint = 'https://n8n.example.io/webhook/audio-generator'; // Update this endpoint accordingly
+
+        // Prepare the payload for the AI agent.
+        const payload = { url };
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        // Assuming the response returns an "audioScript" field containing the generated text.
+        if (data.audioScript) {
+          resultDiv.innerHTML = `<strong>Generated Audio Script:</strong><br>${data.audioScript}`;
+        } else {
+          resultDiv.textContent = 'No audio script returned. Please check the provided URL and try again.';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        resultDiv.textContent = 'An error occurred. Please try again later.';
+      }
+    });
+  </script>
+</body>
+</html>
